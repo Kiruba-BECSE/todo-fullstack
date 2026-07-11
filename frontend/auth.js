@@ -1,4 +1,4 @@
-const API = '/api';
+const API = 'http://localhost:5000/api';
 
 function saveAuth(token, user) {
   localStorage.setItem('token', token);
