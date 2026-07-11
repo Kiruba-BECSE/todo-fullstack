@@ -10,14 +10,13 @@ const listRoutes = require('./routes/listRoutes');
 
 
 const app = express();
+const path = require('path');
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
 app.use(express.json());
 app.use('/api/todos', todoRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/lists', listRoutes);
-const path = require('path');
-app.use(express.static(path.join(__dirname, 'public')));
-
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log('MongoDB connected');

@@ -17,11 +17,11 @@ function getUser() {
 function logout() {
   localStorage.removeItem('token');
   localStorage.removeItem('user');
-  window.location.href = 'login.html';
+  window.location.href = 'index.html';
 }
 
 function requireAuth() {
-  if (!getToken()) window.location.href = 'login.html';
+  if (!getToken()) window.location.href = 'index.html';
 }
 
 async function apiFetch(url, options = {}) {

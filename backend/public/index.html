@@ -1,19 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>To-Do List</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Momentum — Log in</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
-    <h1>My To-Do List</h1>
-    <form id="todoForm">
-      <input type="text" id="todoInput" placeholder="Add a task..." required>
-      <button type="submit">Add</button>
-    </form>
-    <ul id="todoList"></ul>
+  <div class="auth-wrap">
+    <div class="auth-card glass">
+      <div class="brand"><span class="dot"></span>MOMENTUM</div>
+      <h1>Welcome back <span class="gradient-text">✨</span></h1>
+      <p class="auth-sub">Log in to keep your streak going.</p>
+
+      <div class="error" id="errorBox"></div>
+
+      <form id="loginForm">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="you@example.com" required>
+
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="••••••••" required>
+
+        <button type="submit">Log in</button>
+      </form>
+
+     <div class="switch-link">
+  New here? <a href="signup.html">Create an account</a><br>
+  <a href="forgot-password.html" style="font-size:12px;">Forgot password?</a>
+</div>
+
+      <p class="quote-box" id="quoteBox"></p>
+    </div>
   </div>
-  <script src="script.js"></script>
+
+  <script src="quotes.js"></script>
+  <script src="auth.js"></script>
+  <script>
+    renderQuoteInto('quoteBox');
+
+    const form = document.getElementById('loginForm');
+    const errorBox = document.getElementById('errorBox');
+
+    // ripple effect on any button click
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      const rect = btn.getBoundingClientRect();
+      const ripple = document.createElement('span');
+      ripple.className = 'ripple';
+      ripple.style.left = `${e.clientX - rect.left}px`;
+      ripple.style.top = `${e.clientY - rect.top}px`;
+      btn.appendChild(ripple);
+      setTimeout(() => ripple.remove(), 600);
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorBox.classList.remove('show');
+
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      try {
+        const res = await fetch(`${API}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          showError(errorBox, data.error || 'Login failed');
+          return;
+        }
+
+        saveAuth(data.token, data.user);
+        window.location.href = 'dashboard.html';
+      } catch (err) {
+        showError(errorBox, 'Could not connect to server');
+      }
+    });
+  </script>
 </body>
 </html>
