@@ -1,19 +1,9 @@
-const nodemailer = require('nodemailer');
-
-const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  },
-  family: 4 // force IPv4 — Render's network has trouble with IPv6 to Gmail
-});
+const { Resend } = require('resend');
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 async function sendReminderEmail(toEmail, todoTitle, listTitle) {
-  await transporter.sendMail({
-    from: `"Fieldnotes" <${process.env.EMAIL_USER}>`,
+  await resend.emails.send({
+    from: 'Momentum <onboarding@resend.dev>',
     to: toEmail,
     subject: `Reminder: ${todoTitle}`,
     html: `
@@ -25,9 +15,10 @@ async function sendReminderEmail(toEmail, todoTitle, listTitle) {
     `
   });
 }
+
 async function sendResetCodeEmail(toEmail, code) {
-  await transporter.sendMail({
-    from: `"Momentum" <${process.env.EMAIL_USER}>`,
+  await resend.emails.send({
+    from: 'Momentum <onboarding@resend.dev>',
     to: toEmail,
     subject: `Your password reset code: ${code}`,
     html: `
@@ -42,4 +33,3 @@ async function sendResetCodeEmail(toEmail, code) {
 }
 
 module.exports = { sendReminderEmail, sendResetCodeEmail };
-
