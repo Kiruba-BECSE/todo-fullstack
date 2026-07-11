@@ -30,15 +30,14 @@ function renderLists(lists) {
     const div = document.createElement('div');
     div.className = 'list-card';
     div.innerHTML = `
-      <div>
-        <a href="list.html?id=${list._id}">${escapeHtml(list.title)}</a>
-        <div class="meta">${list.isPublic ? '<span class="public-badge">Public</span>' : 'Private'}</div>
-      </div>
-      <div class="list-actions">
-        <button class="icon-btn" onclick="renameList('${list._id}', '${escapeHtml(list.title)}')">Rename</button>
-        <button class="icon-btn" onclick="deleteList('${list._id}')">Delete</button>
-      </div>
-    `;
+  <div>
+    <a href="list.html?id=${list._id}">${escapeHtml(list.title)}</a>
+  </div>
+  <div class="list-actions">
+    <button class="icon-btn" onclick="renameList('${list._id}', '${escapeHtml(list.title)}')">Rename</button>
+    <button class="icon-btn" onclick="deleteList('${list._id}')">Delete</button>
+  </div>
+`;
     listsContainer.appendChild(div);
   });
 }

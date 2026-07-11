@@ -14,10 +14,11 @@
   <div class="app-shell">
     <div class="topbar">
       <div class="brand">Fieldnotes</div>
-      <div class="user-chip">
-        <span id="userName"></span>
-        <button onclick="logout()">Log out</button>
-      </div>
+     <div class="user-chip">
+  <span id="userName"></span>
+  <button class="secondary" onclick="window.location.href='settings.html'">Settings</button>
+  <button onclick="logout()">Log out</button>
+</div>
     </div>
 
     <a href="dashboard.html" class="back-link">← All lists</a>
@@ -26,13 +27,7 @@
       <h1 id="listTitle">Loading…</h1>
     </div>
 
-    <div class="share-box">
-      <div>
-        <div class="label" id="shareLabel">Public sharing is off</div>
-        <div class="share-url" id="shareUrl" style="display:none;"></div>
-      </div>
-      <button class="toggle" id="shareToggle" onclick="togglePublic()"></button>
-    </div>
+    
 
     <div class="stats-bar" id="statsBar"></div>
 
@@ -40,7 +35,20 @@
 
    <form class="new-row" id="newItemForm">
   <input type="text" id="newItemTitle" placeholder="Add a task…" required>
-  <input type="text" id="newItemTags" placeholder="tags (comma separated)" style="max-width:160px;">
+<form class="new-row" id="newItemForm" style="flex-wrap: wrap;">
+  <input type="text" id="newItemTitle" placeholder="Add a task…" required style="flex: 1; min-width: 180px;">
+  <input type="datetime-local" id="newItemReminder" style="max-width:190px;">
+  <button type="submit">Add</button>
+</form>
+
+<div class="tag-picker glass" style="padding: 14px 16px; margin-bottom: 24px;">
+  <div style="font-size: 12px; color: var(--text-soft); margin-bottom: 10px;">Tags for this task (optional)</div>
+  <div class="tag-filters" id="tagPickerOptions" style="margin-bottom: 10px;"></div>
+  <div style="display: flex; gap: 8px;">
+    <input type="text" id="customTagInput" placeholder="Add a custom tag…" style="flex: 1; font-size: 13px; padding: 9px 12px;">
+    <button type="button" class="secondary" onclick="addCustomTag()" style="padding: 9px 14px; font-size: 12px; margin: 0;">Add</button>
+  </div>
+</div>
   <input type="datetime-local" id="newItemReminder" style="max-width:190px;">
   <button type="submit">Add</button>
 </form>

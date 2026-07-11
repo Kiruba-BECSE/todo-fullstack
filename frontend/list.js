@@ -14,13 +14,12 @@ let currentList = null;
 let activeTagFilter = null;
 
 const listTitleEl = document.getElementById('listTitle');
-const shareLabel = document.getElementById('shareLabel');
-const shareUrl = document.getElementById('shareUrl');
-const shareToggle = document.getElementById('shareToggle');
 const statsBar = document.getElementById('statsBar');
 const tagFilters = document.getElementById('tagFilters');
 const todoListEl = document.getElementById('todoList');
 const newItemForm = document.getElementById('newItemForm');
+const PRESET_TAGS = ['Urgent', 'Important', 'Personal', 'Work', 'Low priority'];
+let selectedTags = [];
 
 // ---------- LOAD EVERYTHING ----------
 async function loadAll() {
@@ -43,44 +42,9 @@ async function loadListInfo() {
   currentList = await res.json();
   listTitleEl.textContent = currentList.title;
 
-  renderShareBox();
 }
 
-// ---------- SHARE BOX ----------
-function renderShareBox() {
-  shareToggle.classList.toggle('on', currentList.isPublic);
 
-  if (currentList.isPublic) {
-    shareLabel.textContent =
-      'Public sharing is on — anyone with this link can view';
-
-    const url =
-      `${window.location.origin}${window.location.pathname.replace(
-        'list.html',
-        'shared.html'
-      )}?shareId=${currentList.shareId}`;
-
-    shareUrl.textContent = url;
-    shareUrl.style.display = 'block';
-  } else {
-    shareLabel.textContent = 'Public sharing is off';
-    shareUrl.style.display = 'none';
-  }
-}
-
-async function togglePublic() {
-  const res = await apiFetch(`${API}/lists/${listId}`, {
-    method: 'PUT',
-    body: JSON.stringify({
-      title: currentList.title,
-      isPublic: !currentList.isPublic
-    })
-  });
-
-  currentList = await res.json();
-
-  renderShareBox();
-}
 
 // ---------- STATS ----------
 async function loadStats() {
@@ -109,6 +73,35 @@ function renderStats(stats) {
 }
 
 // ---------- TAG FILTERS ----------
+function renderTagPicker() {
+  const container = document.getElementById('tagPickerOptions');
+  container.innerHTML = PRESET_TAGS.map(tag => `
+    <button type="button" class="tag-filter ${selectedTags.includes(tag) ? 'active' : ''}" onclick="toggleTagSelection('${tag}')">${tag}</button>
+  `).join('');
+
+  // show any custom tags the user has added, that aren't in the preset list
+  selectedTags.filter(t => !PRESET_TAGS.includes(t)).forEach(tag => {
+    container.innerHTML += `<button type="button" class="tag-filter active" onclick="toggleTagSelection('${escapeHtml(tag)}')">${escapeHtml(tag)} ✕</button>`;
+  });
+}
+
+function toggleTagSelection(tag) {
+  if (selectedTags.includes(tag)) {
+    selectedTags = selectedTags.filter(t => t !== tag);
+  } else {
+    selectedTags.push(tag);
+  }
+  renderTagPicker();
+}
+
+function addCustomTag() {
+  const input = document.getElementById('customTagInput');
+  const value = input.value.trim();
+  if (!value) return;
+  if (!selectedTags.includes(value)) selectedTags.push(value);
+  input.value = '';
+  renderTagPicker();
+}
 function renderTagFilters(tagCounts) {
   const tags = Object.keys(tagCounts);
 
@@ -337,51 +330,24 @@ async function saveNewOrder() {
 // ---------- CREATE TODO WITH REMINDER ----------
 newItemForm.addEventListener('submit', async (e) => {
   e.preventDefault();
-
-  const title = document
-    .getElementById('newItemTitle')
-    .value
-    .trim();
-
-  const tagsRaw = document
-    .getElementById('newItemTags')
-    .value
-    .trim();
-
-  const reminderRaw = document
-    .getElementById('newItemReminder')
-    .value;
-
-  const tags = tagsRaw
-    ? tagsRaw
-        .split(',')
-        .map(tag => tag.trim())
-        .filter(Boolean)
-    : [];
+  const title = document.getElementById('newItemTitle').value.trim();
+  const reminderRaw = document.getElementById('newItemReminder').value;
 
   if (!title) return;
 
   await apiFetch(`${API}/todos/${listId}`, {
     method: 'POST',
-
     body: JSON.stringify({
       title,
-      tags,
-
-      // Convert local date/time to UTC
-      reminderAt: reminderRaw
-        ? new Date(reminderRaw).toISOString()
-        : null
+      tags: selectedTags,
+      reminderAt: reminderRaw ? new Date(reminderRaw).toISOString() : null
     })
   });
 
-  // Clear form
   document.getElementById('newItemTitle').value = '';
-
-  document.getElementById('newItemTags').value = '';
-
   document.getElementById('newItemReminder').value = '';
-
+  selectedTags = [];
+  renderTagPicker();
   loadAll();
 });
 
@@ -420,4 +386,5 @@ function escapeHtml(str) {
 }
 
 // ---------- INITIAL LOAD ----------
+renderTagPicker();
 loadAll();

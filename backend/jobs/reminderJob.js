@@ -2,7 +2,7 @@ const cron = require('node-cron');
 const Todo = require('../models/Todo');
 const TodoList = require('../models/TodoList');
 const User = require('../models/User');
-const sendReminderEmail = require('../utils/mailer');
+const { sendReminderEmail } = require('../utils/mailer');
 
 function startReminderJob() {
   // runs every minute
