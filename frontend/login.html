@@ -3,24 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Log in — Todo</title>
+<title>Momentum — Log in</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="auth-wrap">
-    <div class="auth-card">
-      <div class="brand">Fieldnotes</div>
-      <h1>Welcome back</h1>
-      <p class="auth-sub">Log in to see your lists.</p>
+    <div class="auth-card glass">
+      <div class="brand"><span class="dot"></span>MOMENTUM</div>
+      <h1>Welcome back <span class="gradient-text">✨</span></h1>
+      <p class="auth-sub">Log in to keep your streak going.</p>
 
       <div class="error" id="errorBox"></div>
 
       <form id="loginForm">
         <label for="email">Email</label>
-        <input type="email" id="email" required>
+        <input type="email" id="email" placeholder="you@example.com" required>
 
         <label for="password">Password</label>
-        <input type="password" id="password" required>
+        <input type="password" id="password" placeholder="••••••••" required>
 
         <button type="submit">Log in</button>
       </form>
@@ -28,13 +28,31 @@
       <div class="switch-link">
         New here? <a href="signup.html">Create an account</a>
       </div>
+
+      <p class="quote-box" id="quoteBox"></p>
     </div>
   </div>
 
+  <script src="quotes.js"></script>
   <script src="auth.js"></script>
   <script>
+    renderQuoteInto('quoteBox');
+
     const form = document.getElementById('loginForm');
     const errorBox = document.getElementById('errorBox');
+
+    // ripple effect on any button click
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      const rect = btn.getBoundingClientRect();
+      const ripple = document.createElement('span');
+      ripple.className = 'ripple';
+      ripple.style.left = `${e.clientX - rect.left}px`;
+      ripple.style.top = `${e.clientY - rect.top}px`;
+      btn.appendChild(ripple);
+      setTimeout(() => ripple.remove(), 600);
+    });
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();

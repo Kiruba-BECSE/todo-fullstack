@@ -3,39 +3,56 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sign up — Todo</title>
+<title>Momentum — Sign up</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="auth-wrap">
-    <div class="auth-card">
-      <div class="brand">Fieldnotes</div>
-      <h1>Create your account</h1>
-      <p class="auth-sub">Track tasks across lists, tags, and devices.</p>
+    <div class="auth-card glass">
+      <div class="brand"><span class="dot"></span>MOMENTUM</div>
+      <h1>Build your <span class="gradient-text">momentum</span></h1>
+      <p class="auth-sub">Track tasks, build streaks, get things done.</p>
 
       <div class="error" id="errorBox"></div>
 
       <form id="signupForm">
         <label for="name">Name</label>
-        <input type="text" id="name" required>
+        <input type="text" id="name" placeholder="Your name" required>
 
         <label for="email">Email</label>
-        <input type="email" id="email" required>
+        <input type="email" id="email" placeholder="you@example.com" required>
 
         <label for="password">Password</label>
-        <input type="password" id="password" required minlength="6">
+        <input type="password" id="password" placeholder="At least 6 characters" required minlength="6">
 
-        <button type="submit">Sign up</button>
+        <button type="submit">Create account</button>
       </form>
 
       <div class="switch-link">
         Already have an account? <a href="login.html">Log in</a>
       </div>
+
+      <p class="quote-box" id="quoteBox"></p>
     </div>
   </div>
 
+  <script src="quotes.js"></script>
   <script src="auth.js"></script>
   <script>
+    renderQuoteInto('quoteBox');
+
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      const rect = btn.getBoundingClientRect();
+      const ripple = document.createElement('span');
+      ripple.className = 'ripple';
+      ripple.style.left = `${e.clientX - rect.left}px`;
+      ripple.style.top = `${e.clientY - rect.top}px`;
+      btn.appendChild(ripple);
+      setTimeout(() => ripple.remove(), 600);
+    });
+
     const form = document.getElementById('signupForm');
     const errorBox = document.getElementById('errorBox');
 
