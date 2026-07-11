@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Settings — Momentum</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell" style="max-width: 480px;">
+    <div class="topbar">
+      <div class="brand"><span class="dot"></span>MOMENTUM</div>
+      <div class="user-chip">
+        <span id="userName"></span>
+        <button onclick="logout()">Log out</button>
+      </div>
+    </div>
+
+    <a href="dashboard.html" class="back-link">← Back to lists</a>
+
+    <div class="page-head">
+      <h1>Settings</h1>
+    </div>
+
+    <div class="glass" style="padding: 28px 24px;">
+      <h3 style="font-size: 15px; margin-bottom: 4px;">Change password</h3>
+      <p style="font-size: 13px; color: var(--text-soft); margin-bottom: 20px;">Update your account password.</p>
+
+      <div class="error" id="errorBox"></div>
+      <div class="error" id="successBox" style="background: rgba(16,185,129,0.12); border-color: rgba(16,185,129,0.3); color: #6EE7B7;"></div>
+
+      <form id="passwordForm">
+        <label for="currentPassword">Current password</label>
+        <input type="password" id="currentPassword" required>
+
+        <label for="newPassword">New password</label>
+        <input type="password" id="newPassword" required minlength="6">
+
+        <label for="confirmPassword">Confirm new password</label>
+        <input type="password" id="confirmPassword" required minlength="6">
+
+        <button type="submit">Update password</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="auth.js"></script>
+  <script>
+    requireAuth();
+    const user = getUser();
+    document.getElementById('userName').textContent = user ? user.name : '';
+
+    const form = document.getElementById('passwordForm');
+    const errorBox = document.getElementById('errorBox');
+    const successBox = document.getElementById('successBox');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorBox.classList.remove('show');
+      successBox.classList.remove('show');
+
+      const currentPassword = document.getElementById('currentPassword').value;
+      const newPassword = document.getElementById('newPassword').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+
+      if (newPassword !== confirmPassword) {
+        showError(errorBox, 'New passwords do not match');
+        return;
+      }
+
+      const res = await apiFetch(`${API}/auth/change-password`, {
+        method: 'PUT',
+        body: JSON.stringify({ currentPassword, newPassword })
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        showError(errorBox, data.error || 'Could not update password');
+        return;
+      }
+
+      showError(successBox, 'Password updated successfully!');
+      form.reset();
+    });
+  </script>
+</body>
+</html>

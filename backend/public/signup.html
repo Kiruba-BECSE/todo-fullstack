@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Momentum — Sign up</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="auth-wrap">
+    <div class="auth-card glass">
+      <div class="brand"><span class="dot"></span>MOMENTUM</div>
+      <h1>Build your <span class="gradient-text">momentum</span></h1>
+      <p class="auth-sub">Track tasks, build streaks, get things done.</p>
+
+      <div class="error" id="errorBox"></div>
+
+      <form id="signupForm">
+        <label for="name">Name</label>
+        <input type="text" id="name" placeholder="Your name" required>
+
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="you@example.com" required>
+
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="At least 6 characters" required minlength="6">
+
+        <button type="submit">Create account</button>
+      </form>
+
+      <div class="switch-link">
+        Already have an account? <a href="login.html">Log in</a>
+      </div>
+
+      <p class="quote-box" id="quoteBox"></p>
+    </div>
+  </div>
+
+  <script src="quotes.js"></script>
+  <script src="auth.js"></script>
+  <script>
+    renderQuoteInto('quoteBox');
+
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      const rect = btn.getBoundingClientRect();
+      const ripple = document.createElement('span');
+      ripple.className = 'ripple';
+      ripple.style.left = `${e.clientX - rect.left}px`;
+      ripple.style.top = `${e.clientY - rect.top}px`;
+      btn.appendChild(ripple);
+      setTimeout(() => ripple.remove(), 600);
+    });
+
+    const form = document.getElementById('signupForm');
+    const errorBox = document.getElementById('errorBox');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorBox.classList.remove('show');
+
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      try {
+        const res = await fetch(`${API}/auth/signup`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password })
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          showError(errorBox, data.error || 'Signup failed');
+          return;
+        }
+
+        saveAuth(data.token, data.user);
+        window.location.href = 'dashboard.html';
+      } catch (err) {
+        showError(errorBox, 'Could not connect to server');
+      }
+    });
+  </script>
+</body>
+</html>
