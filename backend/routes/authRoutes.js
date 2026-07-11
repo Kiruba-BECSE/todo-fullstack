@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
-
+const { sendResetCodeEmail } = require('../utils/mailer');
 // SIGNUP
 router.post('/signup', async (req, res) => {
   try {
@@ -74,22 +74,24 @@ router.put('/change-password', auth, async (req, res) => {
 const { sendResetCodeEmail } = require('../utils/mailer');
 
 // STEP 1: request a reset code
+
 router.post('/forgot-password', async (req, res) => {
   try {
     const { email } = req.body;
     const user = await User.findOne({ email });
 
-    // don't reveal whether the email exists — always respond the same way
     if (!user) return res.json({ message: 'If that email exists, a code has been sent.' });
 
-    const code = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit code
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
     user.resetCode = code;
-    user.resetCodeExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 min from now
+    user.resetCodeExpires = new Date(Date.now() + 10 * 60 * 1000);
     await user.save();
 
-    await sendResetCodeEmail(user.email, code);
-
     res.json({ message: 'If that email exists, a code has been sent.' });
+
+    sendResetCodeEmail(user.email, code).catch(err =>
+      console.error('Failed to send reset email:', err.message)
+    );
   } catch (err) {
     res.status(400).json({ error: err.message });
   }

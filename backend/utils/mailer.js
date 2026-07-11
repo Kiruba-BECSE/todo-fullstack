@@ -31,5 +31,4 @@ async function sendResetCodeEmail(toEmail, code) {
     `
   });
 }
-
 module.exports = { sendReminderEmail, sendResetCodeEmail };
