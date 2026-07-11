@@ -33,11 +33,9 @@
 
     <div class="tag-filters" id="tagFilters"></div>
 
-   <form class="new-row" id="newItemForm">
-  <input type="text" id="newItemTitle" placeholder="Add a task…" required>
 <form class="new-row" id="newItemForm" style="flex-wrap: wrap;">
   <input type="text" id="newItemTitle" placeholder="Add a task…" required style="flex: 1; min-width: 180px;">
-  <input type="datetime-local" id="newItemReminder" style="max-width:190px;">
+  <input type="datetime-local" id="newItemReminder" placeholder="Set remainder" style="max-width:190px;">
   <button type="submit">Add</button>
 </form>
 
@@ -49,7 +47,6 @@
     <button type="button" class="secondary" onclick="addCustomTag()" style="padding: 9px 14px; font-size: 12px; margin: 0;">Add</button>
   </div>
 </div>
-  <input type="datetime-local" id="newItemReminder" style="max-width:190px;">
   <button type="submit">Add</button>
 </form>
     <ul class="todo-list" id="todoList"></ul>
