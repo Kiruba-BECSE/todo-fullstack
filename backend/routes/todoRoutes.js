@@ -72,5 +72,18 @@ router.delete('/item/:id', auth, async (req, res) => {
   await Todo.findByIdAndDelete(req.params.id);
   res.json({ message: 'Deleted' });
 });
+// PUBLIC: view a shared list by its shareId (no login required)
+// GET /api/lists/public/:shareId
+router.get('/public/:shareId', async (req, res) => {
+  const list = await TodoList.findOne({ shareId: req.params.shareId, isPublic: true });
+  if (!list) return res.status(404).json({ error: 'This list is not public or does not exist' });
 
+  const todos = await Todo.find({ list: list._id }).sort({ order: 1, createdAt: -1 });
+
+  res.json({
+    title: list.title,
+    isPublic: list.isPublic,
+    todos
+  });
+});
 module.exports = router;
