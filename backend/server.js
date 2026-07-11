@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
+
 const startReminderJob = require('./jobs/reminderJob');
 const todoRoutes = require('./routes/todoRoutes');
 const authRoutes = require('./routes/authRoutes');
@@ -14,6 +15,8 @@ app.use(express.json());
 app.use('/api/todos', todoRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/lists', listRoutes);
+const path = require('path');
+app.use(express.static(path.join(__dirname, 'public')));
 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
