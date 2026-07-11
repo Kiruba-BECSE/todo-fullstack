@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Lists — Fieldnotes</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <div class="topbar">
+      <div class="brand">Fieldnotes</div>
+      <div class="user-chip">
+        <span id="userName"></span>
+        <button onclick="logout()">Log out</button>
+      </div>
+    </div>
+
+    <div class="page-head">
+      <h1>Your lists</h1>
+    </div>
+
+    <form class="new-row" id="newListForm">
+      <input type="text" id="newListTitle" placeholder="New list name…" required>
+      <button type="submit">Add list</button>
+    </form>
+
+    <div id="listsContainer"></div>
+  </div>
+
+  <script src="auth.js"></script>
+  <script src="dashboard.js"></script>
+</body>
+</html>

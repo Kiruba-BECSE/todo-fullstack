@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>List — Fieldnotes</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <div class="topbar">
+      <div class="brand">Fieldnotes</div>
+      <div class="user-chip">
+        <span id="userName"></span>
+        <button onclick="logout()">Log out</button>
+      </div>
+    </div>
+
+    <a href="dashboard.html" class="back-link">← All lists</a>
+
+    <div class="page-head">
+      <h1 id="listTitle">Loading…</h1>
+    </div>
+
+    <div class="share-box">
+      <div>
+        <div class="label" id="shareLabel">Public sharing is off</div>
+        <div class="share-url" id="shareUrl" style="display:none;"></div>
+      </div>
+      <button class="toggle" id="shareToggle" onclick="togglePublic()"></button>
+    </div>
+
+    <div class="stats-bar" id="statsBar"></div>
+
+    <div class="tag-filters" id="tagFilters"></div>
+
+    <form class="new-row" id="newItemForm">
+      <input type="text" id="newItemTitle" placeholder="Add a task…" required>
+      <input type="text" id="newItemTags" placeholder="tags (comma separated)" style="max-width:180px;">
+      <button type="submit">Add</button>
+    </form>
+
+    <ul class="todo-list" id="todoList"></ul>
+  </div>
+
+  <script src="auth.js"></script>
+  <script src="list.js"></script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign up — Todo</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="brand">Fieldnotes</div>
+      <h1>Create your account</h1>
+      <p class="auth-sub">Track tasks across lists, tags, and devices.</p>
+
+      <div class="error" id="errorBox"></div>
+
+      <form id="signupForm">
+        <label for="name">Name</label>
+        <input type="text" id="name" required>
+
+        <label for="email">Email</label>
+        <input type="email" id="email" required>
+
+        <label for="password">Password</label>
+        <input type="password" id="password" required minlength="6">
+
+        <button type="submit">Sign up</button>
+      </form>
+
+      <div class="switch-link">
+        Already have an account? <a href="login.html">Log in</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="auth.js"></script>
+  <script>
+    const form = document.getElementById('signupForm');
+    const errorBox = document.getElementById('errorBox');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorBox.classList.remove('show');
+
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      try {
+        const res = await fetch(`${API}/auth/signup`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password })
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          showError(errorBox, data.error || 'Signup failed');
+          return;
+        }
+
+        saveAuth(data.token, data.user);
+        window.location.href = 'dashboard.html';
+      } catch (err) {
+        showError(errorBox, 'Could not connect to server');
+      }
+    });
+  </script>
+</body>
+</html>
