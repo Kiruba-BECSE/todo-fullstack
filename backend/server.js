@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
-
+const startReminderJob = require('./jobs/reminderJob');
 const todoRoutes = require('./routes/todoRoutes');
 const authRoutes = require('./routes/authRoutes');
 const listRoutes = require('./routes/listRoutes');
@@ -16,7 +16,10 @@ app.use('/api/auth', authRoutes);
 app.use('/api/lists', listRoutes);
 
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('MongoDB connected'))
+  .then(() => {
+    console.log('MongoDB connected');
+    startReminderJob(); // start checking for due reminders
+  })
   .catch(err => console.error(err));
 
 const PORT = process.env.PORT || 5000;

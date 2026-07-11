@@ -1,84 +1,194 @@
+
 const express = require('express');
 const router = express.Router();
+
 const Todo = require('../models/Todo');
 const TodoList = require('../models/TodoList');
 const auth = require('../middleware/auth');
 
-// helper: confirm the list belongs to the logged-in user
+// Helper: confirm the list belongs to the logged-in user
 async function verifyListOwnership(listId, userId) {
-  const list = await TodoList.findOne({ _id: listId, owner: userId });
+  const list = await TodoList.findOne({
+    _id: listId,
+    owner: userId
+  });
+
   return list;
 }
+
 
 // CREATE a todo item inside a list
 // POST /api/todos/:listId
 router.post('/:listId', auth, async (req, res) => {
   try {
-    const list = await verifyListOwnership(req.params.listId, req.userId);
-    if (!list) return res.status(404).json({ error: 'List not found' });
+    const list = await verifyListOwnership(
+      req.params.listId,
+      req.userId
+    );
+
+    if (!list) {
+      return res.status(404).json({
+        error: 'List not found'
+      });
+    }
 
     const todo = new Todo({
       title: req.body.title,
       tags: req.body.tags || [],
-      list: req.params.listId
+      list: req.params.listId,
+
+      // Reminder date and time
+      reminderAt: req.body.reminderAt || null
     });
+
     await todo.save();
+
     res.status(201).json(todo);
+
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(400).json({
+      error: err.message
+    });
   }
 });
 
-// GET all todos in a list (optionally filter by tag)
+
+// GET all todos in a list
 // GET /api/todos/:listId?tag=urgent
 router.get('/:listId', auth, async (req, res) => {
-  const list = await verifyListOwnership(req.params.listId, req.userId);
-  if (!list) return res.status(404).json({ error: 'List not found' });
+  const list = await verifyListOwnership(
+    req.params.listId,
+    req.userId
+  );
 
-  const filter = { list: req.params.listId };
-  if (req.query.tag) filter.tags = req.query.tag; // filter by tag if provided
+  if (!list) {
+    return res.status(404).json({
+      error: 'List not found'
+    });
+  }
 
-  const todos = await Todo.find(filter).sort({ order: 1, createdAt: -1 });
+  const filter = {
+    list: req.params.listId
+  };
+
+  // Filter by tag if provided
+  if (req.query.tag) {
+    filter.tags = req.query.tag;
+  }
+
+  const todos = await Todo
+    .find(filter)
+    .sort({
+      order: 1,
+      createdAt: -1
+    });
+
   res.json(todos);
 });
 
-// UPDATE a todo item (title, completed, tags)
+
+// UPDATE a todo item
+// Supports title, completed, tags and reminderAt
 // PUT /api/todos/item/:id
 router.put('/item/:id', auth, async (req, res) => {
   try {
-    const todo = await Todo.findById(req.params.id);
-    if (!todo) return res.status(404).json({ error: 'Not found' });
+    const todo = await Todo.findById(
+      req.params.id
+    );
 
-    // make sure the list this todo belongs to is owned by the user
-    const list = await verifyListOwnership(todo.list, req.userId);
-    if (!list) return res.status(403).json({ error: 'Not authorized' });
+    if (!todo) {
+      return res.status(404).json({
+        error: 'Not found'
+      });
+    }
 
-    const updated = await Todo.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    // Make sure the list belongs to the user
+    const list = await verifyListOwnership(
+      todo.list,
+      req.userId
+    );
+
+    if (!list) {
+      return res.status(403).json({
+        error: 'Not authorized'
+      });
+    }
+
+    const updated = await Todo.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      {
+        new: true
+      }
+    );
+
     res.json(updated);
+
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(400).json({
+      error: err.message
+    });
   }
 });
+
 
 // DELETE a todo item
 // DELETE /api/todos/item/:id
 router.delete('/item/:id', auth, async (req, res) => {
-  const todo = await Todo.findById(req.params.id);
-  if (!todo) return res.status(404).json({ error: 'Not found' });
+  const todo = await Todo.findById(
+    req.params.id
+  );
 
-  const list = await verifyListOwnership(todo.list, req.userId);
-  if (!list) return res.status(403).json({ error: 'Not authorized' });
+  if (!todo) {
+    return res.status(404).json({
+      error: 'Not found'
+    });
+  }
 
-  await Todo.findByIdAndDelete(req.params.id);
-  res.json({ message: 'Deleted' });
+  const list = await verifyListOwnership(
+    todo.list,
+    req.userId
+  );
+
+  if (!list) {
+    return res.status(403).json({
+      error: 'Not authorized'
+    });
+  }
+
+  await Todo.findByIdAndDelete(
+    req.params.id
+  );
+
+  res.json({
+    message: 'Deleted'
+  });
 });
-// PUBLIC: view a shared list by its shareId (no login required)
-// GET /api/lists/public/:shareId
-router.get('/public/:shareId', async (req, res) => {
-  const list = await TodoList.findOne({ shareId: req.params.shareId, isPublic: true });
-  if (!list) return res.status(404).json({ error: 'This list is not public or does not exist' });
 
-  const todos = await Todo.find({ list: list._id }).sort({ order: 1, createdAt: -1 });
+
+// PUBLIC: View a shared list by shareId
+// No login required
+// GET /api/todos/public/:shareId
+router.get('/public/:shareId', async (req, res) => {
+  const list = await TodoList.findOne({
+    shareId: req.params.shareId,
+    isPublic: true
+  });
+
+  if (!list) {
+    return res.status(404).json({
+      error: 'This list is not public or does not exist'
+    });
+  }
+
+  const todos = await Todo
+    .find({
+      list: list._id
+    })
+    .sort({
+      order: 1,
+      createdAt: -1
+    });
 
   res.json({
     title: list.title,
@@ -86,4 +196,47 @@ router.get('/public/:shareId', async (req, res) => {
     todos
   });
 });
+
+
+// REORDER todos within a list
+// PUT /api/todos/reorder/:listId
+router.put('/reorder/:listId', auth, async (req, res) => {
+  try {
+    const list = await verifyListOwnership(
+      req.params.listId,
+      req.userId
+    );
+
+    if (!list) {
+      return res.status(404).json({
+        error: 'List not found'
+      });
+    }
+
+    const { orderedIds } = req.body;
+
+    const updates = orderedIds.map(
+      (id, index) =>
+        Todo.findByIdAndUpdate(
+          id,
+          {
+            order: index
+          }
+        )
+    );
+
+    await Promise.all(updates);
+
+    res.json({
+      message: 'Order updated'
+    });
+
+  } catch (err) {
+    res.status(400).json({
+      error: err.message
+    });
+  }
+});
+
+
 module.exports = router;

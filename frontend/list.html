@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>List — Fieldnotes</title>
 <link rel="stylesheet" href="style.css">
+<style>
+  .todo-item.dragging { opacity: 0.4; }
+  .todo-item { cursor: grab; }
+</style>
 </head>
 <body>
   <div class="app-shell">
@@ -34,12 +38,12 @@
 
     <div class="tag-filters" id="tagFilters"></div>
 
-    <form class="new-row" id="newItemForm">
-      <input type="text" id="newItemTitle" placeholder="Add a task…" required>
-      <input type="text" id="newItemTags" placeholder="tags (comma separated)" style="max-width:180px;">
-      <button type="submit">Add</button>
-    </form>
-
+   <form class="new-row" id="newItemForm">
+  <input type="text" id="newItemTitle" placeholder="Add a task…" required>
+  <input type="text" id="newItemTags" placeholder="tags (comma separated)" style="max-width:160px;">
+  <input type="datetime-local" id="newItemReminder" style="max-width:190px;">
+  <button type="submit">Add</button>
+</form>
     <ul class="todo-list" id="todoList"></ul>
   </div>
 
