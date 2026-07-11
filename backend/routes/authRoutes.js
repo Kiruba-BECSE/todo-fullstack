@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
-const { sendResetCodeEmail } = require('../utils/mailer');
+
 // SIGNUP
 router.post('/signup', async (req, res) => {
   try {
