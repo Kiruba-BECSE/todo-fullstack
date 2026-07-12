@@ -34,12 +34,14 @@
     <div class="tag-filters" id="tagFilters"></div>
 
 <form class="new-row" id="newItemForm" style="flex-wrap: wrap;">
-  <input type="text" id="newItemTitle" placeholder="Add a task…" required style="flex: 1; min-width: 180px;">
-  <input type="datetime-local" id="newItemReminder" placeholder="Set remainder" style="max-width:190px;">
-  <button type="submit">Add</button>
-</form>
+  <input type="text" id="newItemTitle" placeholder="Add a task…" required style="width: 100%; margin-bottom: 12px;">
 
-<div class="tag-picker glass" style="padding: 14px 16px; margin-bottom: 24px;">
+<div style="margin-bottom: 20px;">
+  <label style="font-size: 11px; color: var(--text-soft); text-transform: uppercase; letter-spacing: 0.04em; display: block; margin-bottom: 6px;">Set reminder (optional)</label>
+  <input type="datetime-local" id="newItemReminder" style="width: 100%;">
+</div>
+
+<div class="tag-picker glass" style="padding: 14px 16px; margin-bottom: 20px;">
   <div style="font-size: 12px; color: var(--text-soft); margin-bottom: 10px;">Tags for this task (optional)</div>
   <div class="tag-filters" id="tagPickerOptions" style="margin-bottom: 10px;"></div>
   <div style="display: flex; gap: 8px;">
@@ -47,7 +49,10 @@
     <button type="button" class="secondary" onclick="addCustomTag()" style="padding: 9px 14px; font-size: 12px; margin: 0;">Add</button>
   </div>
 </div>
-  <button type="submit">Add</button>
+
+<button type="button" id="submitNewTask" class="primary" style="width: 100%; margin-bottom: 24px;">Add task</button>
+</form>
+
 </form>
     <ul class="todo-list" id="todoList"></ul>
   </div>

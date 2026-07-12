@@ -384,6 +384,27 @@ function escapeHtml(str) {
 
   return div.innerHTML;
 }
+document.getElementById('submitNewTask').addEventListener('click', async () => {
+  const title = document.getElementById('newItemTitle').value.trim();
+  const reminderRaw = document.getElementById('newItemReminder').value;
+
+  if (!title) return;
+
+  await apiFetch(`${API}/todos/${listId}`, {
+    method: 'POST',
+    body: JSON.stringify({
+      title: title,
+      tags: selectedTags,
+      reminderAt: reminderRaw ? new Date(reminderRaw).toISOString() : null
+    })
+  });
+
+  document.getElementById('newItemTitle').value = '';
+  document.getElementById('newItemReminder').value = '';
+  selectedTags = [];
+  renderTagPicker();
+  loadAll();
+});
 
 // ---------- INITIAL LOAD ----------
 renderTagPicker();
